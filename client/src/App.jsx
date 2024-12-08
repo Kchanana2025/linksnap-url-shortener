@@ -4,7 +4,6 @@ import DemoShortener from './components/DemoShortener';
 import Home from './components/user/Home';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
-import Users from './components/user/Users';
 import { Toaster } from 'react-hot-toast';
 import UrlDetails from './components/url/UrlDetails';
 
@@ -49,7 +48,6 @@ const App = () => {
           />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/users" element={<Users />} />
           <Route path="/urlDetails/:id" element={<UrlDetails />} />
         </Routes>
       </Router>
