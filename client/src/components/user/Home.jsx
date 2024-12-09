@@ -3,6 +3,10 @@ import './Home.css';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
+
+// const apiBase = import.meta.env.VITE_API_BASE_URL;
+
+
 function Home({ userId, name }) {
   const navigate = useNavigate();
 
@@ -135,6 +139,7 @@ function Home({ userId, name }) {
             <h2>URL Shortener</h2>
           </div>
           <div className="buttons">
+            <a href='/api-docs' target="_blank" rel="noopener noreferrer">API Docs</a>
             <a onClick={Logout}>Logout</a>
           </div>
         </header>

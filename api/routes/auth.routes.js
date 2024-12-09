@@ -1,5 +1,10 @@
+/**
+ * @swagger
+ * tags:
+ *   - name: Authentication
+ *     description: Endpoints related to user authentication
+ */
 require('dotenv').config();
-
 const express = require('express');
 const bcrypt = require('bcrypt');
 const User = require('../models/User.model');
@@ -8,6 +13,34 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const secret = process.env.JWT_SECRET;
 
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Register a new user
+ *     description: Registers a user by creating a new account with a hashed password. Returns a JWT token on successful registration.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/AuthRegisterRequest'
+ *     responses:
+ *       200:
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "registered!"
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 router.post('/register', async (req, res) => {
   const { username, password } = req.body;
 
@@ -22,13 +55,44 @@ router.post('/register', async (req, res) => {
     });
     res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
     res.json({ message: 'registered!' });
-    console.log(token);
   } catch (err) {
     console.error('Error registering user:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Login a user
+ *     description: Authenticates a user using username and password. Returns a JWT token on successful login.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/AuthLoginRequest'
+ *     responses:
+ *       200:
+ *         description: User logged in successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "logged in!"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -50,6 +114,34 @@ router.post('/login', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /auth/isAuthenticated:
+ *   get:
+ *     tags:
+ *       - Authentication
+ *     summary: Check if user is authenticated
+ *     description: Verifies the user's authentication status using the JWT token stored in cookies.
+ *     responses:
+ *       200:
+ *         description: Authentication status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 isAuthenticated:
+ *                   type: boolean
+ *                   example: true
+ *                 userId:
+ *                   type: string
+ *                   example: "64efabcd1234567890abcdef"
+ *                 name:
+ *                   type: string
+ *                   example: "john_doe"
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
 router.get('/isAuthenticated', async (req, res) => {
   const token = req.cookies.token;
 
@@ -70,6 +162,26 @@ router.get('/isAuthenticated', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Logout the user
+ *     description: Clears the authentication token from cookies, logging the user out.
+ *     responses:
+ *       200:
+ *         description: User logged out successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Logged out successfully"
+ */
 router.post('/logout', (req, res) => {
   res.clearCookie('token').json({ message: 'Logged out successfully' });
 });
