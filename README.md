@@ -52,7 +52,7 @@ Follow these steps to set up the project locally:
 
 ---
 
-##Usage
+## Usage
 Open the application in your browser.
 Enter the long URL you wish to shorten.
 Click the Shorten button to generate a short link.
@@ -60,7 +60,7 @@ Share the short link anywhere and track its performance (if analytics are suppor
 
 ---
 
-##Technologies Used
+## Technologies Used
 Frontend: HTML, CSS, JavaScript
 Backend: Node.js, Express.js
 Database: MongoDB
