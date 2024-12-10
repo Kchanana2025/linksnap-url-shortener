@@ -22,7 +22,10 @@ Follow these steps to set up the project locally:
    cd linksnap-url-shortener
 2. Install Dependencies
 Ensure you have Node.js installed, then run:
-npm install
+
+[npm install](https://docs.npmjs.com/cli/v9/commands/npm-install)
+
+
 
 
 3.Set Up Environment Variables
