@@ -82,7 +82,8 @@ function DemoShortener() {
             <h2>URL Shortener</h2>
           </div>
           <div className="buttons">
-            <a onClick={goToLogin}>Login</a>
+          <a href='/api-docs' target="_blank" rel="noopener noreferrer">API Docs</a>
+          <a onClick={goToLogin}>Login</a>
             <a onClick={goToRegister}>Register</a>
           </div>
         </header>

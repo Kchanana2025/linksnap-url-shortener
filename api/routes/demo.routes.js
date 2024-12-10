@@ -5,11 +5,9 @@
  *     description: Endpoints for users to try url shortening without loggin in
  */
 
-require('dotenv').config();
 const express = require('express');
-const DemoUrl = require('../models/DemoUrl.model');
-const QRCode = require('qrcode');
-const generateShortUrl = require('../utils/generateShortUrl.js');
+
+const { redirectToOriginal, genQr, shortenDemo } = require('../controllers/demo.controller.js');
 
 const router = express.Router();
 
@@ -34,24 +32,7 @@ const router = express.Router();
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.post('/shorten', async (req, res) => {
-  const { demo_originalUrl } = req.body;
-
-  const demo_shortUrl = generateShortUrl(demo_originalUrl);
-  const oneDayFromNow = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day in milliseconds
-
-  try {
-    await DemoUrl.create({
-      demo_originalUrl,
-      demo_shortUrl,
-      expiresAt: oneDayFromNow, // Set expiration
-    });
-    res.json({ shortUrl: `http://localhost:3000/api/demo/${demo_shortUrl}` });
-  } catch (err) {
-    console.error('Error inserting demo URL:', err);
-    res.status(500).json({ error: 'Failed to insert URL into database' });
-  }
-});
+router.post('/shorten', shortenDemo);
 
 /**
  * @swagger
@@ -73,26 +54,7 @@ router.post('/shorten', async (req, res) => {
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.get('/:shortenedUrl', async (req, res) => {
-  const { shortenedUrl } = req.params;
-
-  try {
-    const demoUrl = await DemoUrl.findOne({
-      demo_shortUrl: shortenedUrl,
-    });
-    if (!demoUrl) return res.status(404).json({ error: 'URL not found' });
-
-    const now = new Date();
-    if (now > demoUrl.expiresAt) {
-      return res.status(410).json({ error: 'URL has expired' }); // HTTP 410 Gone
-    }
-
-    res.redirect(demoUrl.demo_originalUrl);
-  } catch (err) {
-    console.error('Error fetching original URL:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
+router.get('/:shortenedUrl', redirectToOriginal);
 
 /**
  * @swagger
@@ -113,26 +75,6 @@ router.get('/:shortenedUrl', async (req, res) => {
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.get('/qr/:shortenedUrl', async (req, res) => {
-  const { shortenedUrl } = req.params;
-
-  try {
-    // Find the URL data in your database
-    const urlData = await DemoUrl.findOne({ demo_shortUrl: shortenedUrl });
-
-    if (!urlData) {
-      return res.status(404).json({ error: 'Shortened URL not found' });
-    }
-
-    // Generate a QR code for the original URL
-    const qrCode = await QRCode.toDataURL(`http://localhost:3000/api/demo/${urlData.demo_shortUrl}`);
-
-    // Send the QR code as a response
-    res.status(200).json({ qrCode });
-  } catch (error) {
-    console.error('Error generating QR code:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+router.get('/qr/:shortenedUrl', genQr);
 
 module.exports = router;

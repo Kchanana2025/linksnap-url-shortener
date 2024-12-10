@@ -117,6 +117,7 @@ function Home({ userId, name }) {
       });
       if (response.ok) {
         console.log('Logged out successfully');
+        toast.success("Logged out successfully")
         window.location.reload();
       } else {
         console.error('Failed to logout');
@@ -236,7 +237,7 @@ function Home({ userId, name }) {
                             onClick={() => navigate(`/urlDetails/${url._id}`)}
                             className="view-details-btn"
                           >
-                            View Details
+                            Analytics
                           </button>
                           <button
                             onClick={() => handleDeleteUrl(url._id)}
